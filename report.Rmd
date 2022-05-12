@@ -1,0 +1,101 @@
+---
+title: "TIPP Tool Report "
+author: "Maryland Department of the Environment"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+params: 
+  planName: NA
+  baselineYear: NA
+  watershed: NA
+  impairmentParam: NA
+  EOSEOT: NA
+  reductionPerc: NA
+  targetloadText: NA
+  loadreductionText: NA
+  baselinetmdlsummary_table: NA
+  tmdlsummary_table: NA
+  bmploadssummary_table: NA
+  bmpimplementation_table: NA
+  loadplotsummary: NA
+fontsize: 10pt
+header-includes:
+   - \usepackage[justification=raggedright,labelfont=bf,singlelinecheck=false]{caption}
+   - \let\Begin\begin
+   - \let\End\end
+   - \usepackage{pdflscape}
+   - \newcommand{\blandscape}{\begin{landscape}}
+   - \newcommand{\elandscape}{\end{landscape}}
+   - \usepackage[defaultfam,tabular,lining]{montserrat} %% Option 'defaultfam' 
+
+
+
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(leaflet)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\Begin{center}
+
+```{r MDELogo_Vertical_BlackWhite, echo=FALSE, out.width = '60%',fig.align = 'center',results='asis'}
+knitr::include_graphics("MDELogo_Vertical_BlackWhite.png")
+cat("", params$planName, "\n")
+```
+
+\End{center}
+
+\newpage
+
+# TMDL Implementation Progress and Planning (TIPP) Tool 
+
+Maryland Department of the Environment developed the TMDL Implementation Progress and Planning (TIPP) Tool to assist local jurisdictions with assessing their progress and compliance with local TMDLs. The tool is provided 'as is' without warranty of any kind, either expressed, implied, or statutory. The user assumes the entire risk as to quality and performance of the data from this tool. To learn more about TMDLs in Maryland, please visit <https://mde.maryland.gov/programs/water/TMDL>. To contact the developer of this Shiny app, please visit <https://github.com/joshuajdthompson>.
+
+```{r tmdl summary, text,echo=FALSE,results='asis'}
+cat("# TIPP summary for the ", params$planName, "\n")
+cat("Compliance with the ", params$watershed, params$impairmentParam, " TMDL requires a ", params$reductionPerc, "% reduction at the ", params$EOSEOT, "from the ",  params$baselineYear, " baseline load. This ",params$loadreductionText, "(lbs/year) reduction of ",params$impairmentParam, " is required to meet the target load of ",params$targetloadText,"(lbs/year).\n")
+
+```
+
+## Baseline Loads
+Based on the user-entered land use(s), required load reduction, and baseline year BMPs, the baseline load summary can be found below. 
+
+```{r baselinetmdlsummary_table,echo=FALSE}
+kable(params$baselinetmdlsummary_table, caption = "Baseline Loads.")
+```
+
+
+## TMDL Progress Loads
+Based on the user-entered BMP information, the TMDL progress load summary can be found below. 
+
+```{r tmdlsummary_table,echo=FALSE}
+kable(params$tmdlsummary_table, caption = "Progress Loads")
+```
+
+
+## BMP Implementation
+Based on the user-entered BMP information, the TMDL load reductions by each BMP type can be found below. 
+
+
+```{r bmploadssummary_table,echo=FALSE}
+kable(params$bmploadssummary_table, caption = "Load Reductions by Scenario and BMP Group.")
+```
+
+Based on the user-entered BMP information, a summary of BMP implementation by type and scenario can be found below. 
+
+```{r bmpimplementation_table,echo=FALSE}
+options(knitr.kable.NA = '')
+kable(params$bmpimplementation_table, caption = "BMP Implementation Summary.")
+```
+
+\newpage
+\blandscape
+Figure 1 shows the progress from the baseline year. The reductions by each BMP load. The target load, necessary to meet the TMDL, is indicated by the dash horizontal line. 
+
+```{r loadplotsummary,echo=FALSE,  fig.width=12, fig.cap= "Plot of the expected change in the load over time resulting from BMP implementation."}
+params$loadplotsummary
+```
+
+\elandscape
